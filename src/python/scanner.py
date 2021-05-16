@@ -4,7 +4,7 @@ import math
 import multiprocessing
 import multiprocessing.pool
 import random
-import string
+import timeit
 
 # Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned 
 # by a pool that can also spawn their own subprocesses
@@ -74,12 +74,11 @@ def find_islands(seq, opt = {}):
     min_length = opt['min-length']
     chunks = seek(seq, opt)
     print("Sliced %ld character sequence into %ld chunks" % (len(seq), len(chunks)))
-    #print(chunks)
     # Search for islands of `min_length` that meet the threshold
     islands = []
     offset = 0
     n = -1
-    for i in range(0, len(chunks)):
+    for i in range(len(chunks)):
         chunk = chunks[i]
         # If chunk does not meet threshold or is the last chunk, terminate the 
         # current island (if there is one) and append it to the return array.
@@ -129,20 +128,40 @@ def seek(seq, opt = {}):
             else:
                 chunks += r
             return chunks
-    else:
-        score = seq.count('C') + seq.count('G')
-        return Chunk(seq, score, len(seq))
+    score = seq.count('C') + seq.count('G')
+    return Chunk(seq, score, len(seq))
 
-def gen_seq(length):
-    return ''.join(random.choice(['C', 'G', 'A', 'T']) for i in range(length))
+def gen_seq(length, threads = 8, chunk = 24):
+    with NoDaemonPool(threads) as pool:
+        str = ''
+        if length > chunk:
+            while len(str) < length:
+                jobs = []
+                for i in range(threads):
+                    jobs.append((chunk, threads))
+                strs = pool.starmap(gen_seq, jobs)
+                if not type(strs[0]) is str:
+                    for s in strs:
+                        str += ''.join(s)
+                else:
+                    str += ''.join(strs)
+            return str[0:length]
+        return ''.join(random.choice(['C', 'G', 'A', 'T']) for i in range(length))
 
 if __name__ == '__main__':
+    start = timeit.default_timer()
+    seq = gen_seq(256)
+    stop = timeit.default_timer()
+    print("Took %.2f second(s) to generate %ld character sequence" % (stop - start, len(seq)))
+    start = timeit.default_timer()
     islands = find_islands(
-        gen_seq(256),
+        seq,
         { 
             'threads': 8,
             'chunk': 4,
             'threshold': 0.6,
             'min-length': 8,
         })
+    stop = timeit.default_timer()
+    print("Took %.2f second(s) to find %ld CpG islands in %ld character sequence" % (stop - start, len(islands), len(seq)))
     print(islands)
