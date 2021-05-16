@@ -13,6 +13,7 @@ threads = 2
 chunk = 4
 threshold = 0.6
 min_length = 8
+xnsize = 1024
 seq = ''
 
 i = 0
@@ -28,6 +29,8 @@ while len(argv) > 0:
        threshold = float(argv.pop(0))
    elif arg == '-m' or arg == '--min-length':
        min_length = int(argv.pop(0))
+   elif arg == '-n':
+       xnsize = int(argv.pop(0))
    else:
        args.append(arg)
 
@@ -189,7 +192,7 @@ def gen_seq(length):
 if __name__ == '__main__':
     if len(seq) == 0:
         start = timeit.default_timer()
-        seq = gen_seq(1024)
+        seq = gen_seq(xnsize)
         stop = timeit.default_timer()
         print("Took %.2f second(s) to generate %ld character sequence" % (stop - start, len(seq)))
     start = timeit.default_timer()
