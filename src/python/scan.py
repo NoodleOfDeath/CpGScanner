@@ -113,7 +113,7 @@ def find_islands(seq, opt = {}):
     threshold = opt['threshold']
     min_length = opt['min-length']
 
-    print("Searching %ld character sequence for CpG islands using %ld threads and slicing into chunks of size %ld or less, and threshold of %.2f" % (len(seq), threads, chunk_size, threshold))
+    print("Searching %ld character sequence for CpG islands using %ld threads, threshold of %.2f, and slicing into chunks of size %ld or less" % (len(seq), threads, threshold, chunk_size))
 
     chunks = seek(seq, opt)
 
