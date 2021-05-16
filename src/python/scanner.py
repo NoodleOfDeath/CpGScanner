@@ -4,6 +4,7 @@ import math
 import multiprocessing
 import multiprocessing.pool
 import random
+import re
 import timeit
 
 # Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned 
@@ -128,7 +129,8 @@ def seek(seq, opt = {}):
             else:
                 chunks += r
             return chunks
-    score = seq.count('C') + seq.count('G')
+    # TODO: is regex or count more performant?
+    score = len(re.findall('[CG]', seq)) # seq.count('C') + seq.count('G')
     return Chunk(seq, score, len(seq))
 
 def gen_seq(length, threads = 8, chunk = 24):
