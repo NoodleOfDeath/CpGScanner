@@ -66,6 +66,12 @@ class Island(StringRepresentable):
 # Finds CpG islands in a passed genomic sequence based on passed criteria.
 def find_islands(seq, opt = {}):
 
+    threads = 2
+    if 'threads' in opt:
+        threads = opt['threads']
+    if not 'chunk' in opt:
+        print('Missing chunk option')
+        return
     if not 'threshold' in opt:
         print('Missing threshold option')
         return
@@ -73,8 +79,11 @@ def find_islands(seq, opt = {}):
         print('Missing min-length option')
         return
 
+    chunk_size = opt['chunk']
     threshold = opt['threshold']
     min_length = opt['min-length']
+
+    print("Searching %ld character sequence for CpG islands using %ld threads and slicing into chunks of size %ld or less" % (len(seq), threads, chunk_size))
 
     chunks = seek(seq, opt)
 
