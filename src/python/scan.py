@@ -152,7 +152,7 @@ def gen_seq(length):
 
 if __name__ == '__main__':
     start = timeit.default_timer()
-    seq = gen_seq(256)
+    seq = gen_seq(1024)
     stop = timeit.default_timer()
     print("Took %.2f second(s) to generate %ld character sequence" % (stop - start, len(seq)))
     start = timeit.default_timer()
