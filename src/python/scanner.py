@@ -81,14 +81,20 @@ def find_islands(seq, opt = {}):
     n = -1
     for i in range(0, len(chunks)):
         chunk = chunks[i]
+        # If chunk does not meet threshold or is the last chunk, terminate the 
+        # current island (if there is one) and append it to the return array.
+        # Then reset `n` which is the offset of the next possible CpG island.
         if chunk.reduce() < threshold or i == len(chunks) - 1:
+            # Only consider the island valid if it is greater in length than
+            # `min_length`.
             if n >= 0 and offset - n >= min_length:
                 length = offset - n
                 island = Island(seq[n:n+length], n, offset - n)
                 islands.append(island)
             n = -1
         else:
-            #print(chunk.seq)
+            # If `n < 0` then the index of a CpG island has not yet been set
+            # indicating the start of a possible new CpG island.
             if n < 0:
                n = offset
         offset += chunk.length
