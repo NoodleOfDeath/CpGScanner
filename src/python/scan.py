@@ -5,7 +5,34 @@ import multiprocessing
 import multiprocessing.pool
 import random
 import re
+import sys
 import timeit
+
+args = []
+threads = 2
+chunk = 4
+threshold = 0.6
+min_length = 8
+seq = ''
+
+i = 0
+argv = sys.argv[1:]
+# Handle command line arguments
+while len(argv) > 0:
+   arg = argv.pop(0)
+   if arg == '-t' or arg == '--threads':
+       threads = int(argv.pop(0))
+   elif arg == '-c' or arg == '--chunk':
+       chunk = int(argv.pop(0))
+   elif arg == '-th' or arg == '--threshold':
+       threshold = float(argv.pop(0))
+   elif arg == '-m' or arg == '--min-length':
+       min_length = int(argv.pop(0))
+   else:
+       args.append(arg)
+
+if len(args) > 0:
+   seq = args[0]
 
 # Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned 
 # by a pool that can also spawn their own subprocesses
@@ -83,7 +110,7 @@ def find_islands(seq, opt = {}):
     threshold = opt['threshold']
     min_length = opt['min-length']
 
-    print("Searching %ld character sequence for CpG islands using %ld threads and slicing into chunks of size %ld or less" % (len(seq), threads, chunk_size))
+    print("Searching %ld character sequence for CpG islands using %ld threads and slicing into chunks of size %ld or less, and threshold of %.2f" % (len(seq), threads, chunk_size, threshold))
 
     chunks = seek(seq, opt)
 
@@ -160,18 +187,19 @@ def gen_seq(length):
     return ''.join(random.choice(['C', 'G', 'A', 'T']) for i in range(length))
 
 if __name__ == '__main__':
-    start = timeit.default_timer()
-    seq = gen_seq(1024)
-    stop = timeit.default_timer()
-    print("Took %.2f second(s) to generate %ld character sequence" % (stop - start, len(seq)))
+    if len(seq) == 0:
+        start = timeit.default_timer()
+        seq = gen_seq(1024)
+        stop = timeit.default_timer()
+        print("Took %.2f second(s) to generate %ld character sequence" % (stop - start, len(seq)))
     start = timeit.default_timer()
     islands = find_islands(
         seq,
         { 
-            'threads': 2,
-            'chunk': 4,
-            'threshold': 0.6,
-            'min-length': 8,
+            'threads': threads,
+            'chunk': chunk,
+            'threshold': threshold,
+            'min-length': min_length,
         })
     stop = timeit.default_timer()
     print("Took %.2f second(s) to find %ld CpG islands in %ld character sequence" % (stop - start, len(islands), len(seq)))
