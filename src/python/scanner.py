@@ -6,7 +6,8 @@ import multiprocessing.pool
 import random
 import string
 
-# Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned by a pool and will spawn their own subprocesses
+# Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned 
+# by a pool that can also spawn their own subprocesses
 class NoDaemonProcess(multiprocessing.Process):
     # make 'daemon' attribute always return False
     def _get_daemon(self):
@@ -16,7 +17,8 @@ class NoDaemonProcess(multiprocessing.Process):
     daemon = property(_get_daemon, _set_daemon)
 
 
-# Define a no-daemon pool (NoDaemonPool) class that spawns no-daemon processes which will further spawn their own subprocesses
+# Define a no-daemon pool (NoDaemonPool) class that spawns no-daemon processes 
+#which will also spawn their own subprocesses
 class NoDaemonPool(multiprocessing.pool.Pool):
     Process = NoDaemonProcess
 
@@ -42,11 +44,13 @@ class Chunk(StringRepresentable):
     def __str__(self):
         return "({0}, {1}, {2})".format(self.seq, self.reduce(), self.length)
 
+    # returns the ratio of CG presence in this chunk
     def reduce(self):
         return self.score / self.length
 
 
-# Define a CpG island (Island) class that represents a CpG site in a genomic sequence, in the form of a substring with an index and length
+# Define a CpG island (Island) class that represents a CpG site in a genomic sequence, 
+# in the form of a substring with an index and length
 class Island(StringRepresentable):
 
     def __init__(self, seq, index, length):
@@ -71,7 +75,7 @@ def find_islands(seq, opt = {}):
     chunks = seek(seq, opt)
     print("Sliced %ld character sequence into %ld chunks" % (len(seq), len(chunks)))
     #print(chunks)
-    # Search for islands of min_length that meet the threshold
+    # Search for islands of `min_length` that meet the threshold
     islands = []
     offset = 0
     n = -1
@@ -91,7 +95,7 @@ def find_islands(seq, opt = {}):
     print("Found %ld CpG islands matching the criteria" % len(islands))
     return islands
 
-# Subroutine for breaking genetic sequence into chunks to be processed in parallel.
+# Subroutine for breaking genomic sequence into chunks to be processed in parallel.
 def seek(seq, opt = {}):
     threads = 8
     if 'threads' in opt:
@@ -104,15 +108,21 @@ def seek(seq, opt = {}):
     if len(seq) > chunk_size:
         mid = math.floor(len(seq)/2)
         with NoDaemonPool(threads) as pool:
-            results = []
-            # Process chunks in parallel
-            products = pool.starmap(seek, [(seq[0:mid], opt), (seq[mid:len(seq)], opt)])
-            if not type(products[0]) is Chunk:
-                results += products[0]
-                results += products[1]
+            chunks = []
+            # Process the chunks in parallel:
+            # Recursively calls `seek` on the head and tail halves of `seq`
+            # equivalent to calling `seek(seq[0:mid], opt)` and 
+            # `seek(seq[mid:len(seq)], opt)` serially, only `pool.starmap` runs 
+            # this in parallel and returns the method outputs as a tuple
+            r = pool.starmap(seek, [(seq[0:mid], opt), (seq[mid:len(seq)], opt)])
+            # If the return object is two arrays of chunks, append their contents,
+            # separately so we don't end up with multidimensional arrays
+            if not type(r[0]) is Chunk:
+                chunks += r[0]
+                chunks += r[1]
             else:
-                results += products
-            return results
+                chunks += r
+            return chunks
     else:
         score = seq.count('C') + seq.count('G')
         return Chunk(seq, score, len(seq))
