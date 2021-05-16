@@ -6,6 +6,7 @@ import multiprocessing.pool
 import random
 import string
 
+# Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned by a pool and will spawn their own subprocesses
 class NoDaemonProcess(multiprocessing.Process):
     # make 'daemon' attribute always return False
     def _get_daemon(self):
@@ -15,12 +16,12 @@ class NoDaemonProcess(multiprocessing.Process):
     daemon = property(_get_daemon, _set_daemon)
 
 
-# We sub-class multiprocessing.pool.Pool instead of multiprocessing.Pool
-# because the latter is only a wrapper function, not a proper class.
-class NDPool(multiprocessing.pool.Pool):
+# Define a no-daemon pool (NoDaemonPool) class that spawns no-daemon processes which will further spawn their own subprocesses
+class NoDaemonPool(multiprocessing.pool.Pool):
     Process = NoDaemonProcess
 
 
+# Define a string representable (StringRepresentable) interface for debug purposes
 class StringRepresentable:
 
     def __str__(self):
@@ -30,6 +31,7 @@ class StringRepresentable:
         return str(self)
 
 
+# Define Chunk class for parallel processing of the genome
 class Chunk(StringRepresentable):
 
     def __init__(self, seq, score, length):
@@ -44,18 +46,19 @@ class Chunk(StringRepresentable):
         return self.score / self.length
 
 
+# Define a CpG island (Island) class that represents a CpG site in a genomic sequence, in the form of a substring with an index and length
 class Island(StringRepresentable):
 
-    def __init__(self, seq, start, length):
+    def __init__(self, seq, index, length):
         self.seq = seq
-        self.start = start
+        self.index = index
         self.length = length
 
     def __str__(self):
-        return "({0}, {1}, {2})".format(self.seq, self.start, self.length)
+        return "({0}, {1}, {2})".format(self.seq, self.index, self.length)
 
 
-# Finds CpG islands based on passed criteria.
+# Finds CpG islands in a passed genomic sequence based on passed criteria.
 def find_islands(seq, opt = {}):
     if not 'threshold' in opt:
         print('Missing threshold option')
@@ -100,7 +103,7 @@ def seek(seq, opt = {}):
     #print(seq, len(seq))
     if len(seq) > chunk_size:
         mid = math.floor(len(seq)/2)
-        with NDPool(threads) as pool:
+        with NoDaemonPool(threads) as pool:
             results = []
             # Process chunks in parallel
             products = pool.starmap(seek, [(seq[0:mid], opt), (seq[mid:len(seq)], opt)])
@@ -123,7 +126,7 @@ if __name__ == '__main__':
         { 
             'threads': 8,
             'chunk': 4,
-            'threshold': 0.75,
+            'threshold': 0.6,
             'min-length': 8,
         })
     print(islands)
