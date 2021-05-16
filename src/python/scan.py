@@ -11,12 +11,14 @@ import timeit
 # Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned 
 # by a pool that can also spawn their own subprocesses
 class NoDaemonProcess(multiprocessing.Process):
-    # make 'daemon' attribute always return False
-    def _get_daemon(self):
+    
+    @property
+    def daemon(self):
         return False
-    def _set_daemon(self, value):
+    
+    @daemon.setter
+    def daemon(self, value):
         pass
-    daemon = property(_get_daemon, _set_daemon)
 
 
 # Define a no-daemon pool (NoDaemonPool) class that spawns no-daemon processes 
