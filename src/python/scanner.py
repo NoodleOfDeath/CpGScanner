@@ -65,16 +65,21 @@ class Island(StringRepresentable):
 
 # Finds CpG islands in a passed genomic sequence based on passed criteria.
 def find_islands(seq, opt = {}):
+
     if not 'threshold' in opt:
         print('Missing threshold option')
         return
     if not 'min-length' in opt:
         print('Missing min-length option')
         return
+
     threshold = opt['threshold']
     min_length = opt['min-length']
+
     chunks = seek(seq, opt)
+
     print("Sliced %ld character sequence into %ld chunks" % (len(seq), len(chunks)))
+
     # Search for islands of `min_length` that meet the threshold
     islands = []
     offset = 0
@@ -98,29 +103,34 @@ def find_islands(seq, opt = {}):
             if n < 0:
                n = offset
         offset += chunk.length
+
     print("Found %ld CpG islands matching the criteria" % len(islands))
     return islands
 
 # Subroutine for breaking genomic sequence into chunks to be processed in parallel.
 def seek(seq, opt = {}):
-    threads = 8
+
+    threads = 2
     if 'threads' in opt:
         threads = opt['threads']
     if not 'chunk' in opt:
         print('Missing chunk option')
         return
+
     chunk_size = opt['chunk']
-    #print(seq, len(seq))
+
     if len(seq) > chunk_size:
         mid = math.floor(len(seq)/2)
         with NoDaemonPool(threads) as pool:
+
             chunks = []
             # Process the chunks in parallel:
             # Recursively calls `seek` on the head and tail halves of `seq`
-            # equivalent to calling `seek(seq[0:mid], opt)` and 
-            # `seek(seq[mid:len(seq)], opt)` serially, only `pool.starmap` runs 
-            # this in parallel and returns the method outputs as a tuple
             r = pool.starmap(seek, [(seq[0:mid], opt), (seq[mid:len(seq)], opt)])
+
+            # this is equivalent to serially calling `seek` like below:
+            # r = (seek(seq[0:mid], opt), seek(seq[mid:len(seq)], opt))
+
             # If the return object is two arrays of chunks, append their contents,
             # separately so we don't end up with multidimensional arrays
             if not type(r[0]) is Chunk:
@@ -128,7 +138,9 @@ def seek(seq, opt = {}):
                 chunks += r[1]
             else:
                 chunks += r
+
             return chunks
+
     # TODO: is regex or count more performant?
     score = len(re.findall('[CG]', seq)) # seq.count('C') + seq.count('G')
     return Chunk(seq, score, len(seq))
@@ -147,7 +159,7 @@ if __name__ == '__main__':
     islands = find_islands(
         seq,
         { 
-            'threads': 8,
+            'threads': 2,
             'chunk': 4,
             'threshold': 0.6,
             'min-length': 8,
