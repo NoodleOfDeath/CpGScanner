@@ -72,22 +72,18 @@ def find_islands(seq, opt = {}):
     islands = []
     offset = 0
     n = -1
-    dn = 0
     for i in range(0, len(chunks)):
         chunk = chunks[i]
         if chunk.reduce() < threshold or i == len(chunks) - 1:
-            if dn >= min_length:
+            if n >= 0 and offset - n >= min_length:
                 length = offset - n
                 island = Island(seq[n:n+length], n, offset - n)
                 islands.append(island)
             n = -1
-            dn = 0
         else:
             #print(chunk.seq)
             if n < 0:
                n = offset
-            else:
-               dn += 1
         offset += chunk.length
     print("Found %ld CpG islands matching the criteria" % len(islands))
     return islands
@@ -127,7 +123,7 @@ if __name__ == '__main__':
         { 
             'threads': 8,
             'chunk': 4,
-            'threshold': .50,
-            'min-length': 2,
+            'threshold': 0.75,
+            'min-length': 8,
         })
     print(islands)
