@@ -133,22 +133,10 @@ def seek(seq, opt = {}):
     score = len(re.findall('[CG]', seq)) # seq.count('C') + seq.count('G')
     return Chunk(seq, score, len(seq))
 
-def gen_seq(length, threads = 8, chunk = 24):
-    with NoDaemonPool(threads) as pool:
-        str = ''
-        if length > chunk:
-            while len(str) < length:
-                jobs = []
-                for i in range(threads):
-                    jobs.append((chunk, threads))
-                strs = pool.starmap(gen_seq, jobs)
-                if not type(strs[0]) is str:
-                    for s in strs:
-                        str += ''.join(s)
-                else:
-                    str += ''.join(strs)
-            return str[0:length]
-        return ''.join(random.choice(['C', 'G', 'A', 'T']) for i in range(length))
+
+# Generates a random genomic sequence.
+def gen_seq(length):
+    return ''.join(random.choice(['C', 'G', 'A', 'T']) for i in range(length))
 
 if __name__ == '__main__':
     start = timeit.default_timer()
