@@ -18,7 +18,7 @@ class NoDaemonProcess(multiprocessing.Process):
 
 
 # Define a no-daemon pool (NoDaemonPool) class that spawns no-daemon processes 
-#which will also spawn their own subprocesses
+# which will also spawn their own subprocesses
 class NoDaemonPool(multiprocessing.pool.Pool):
     Process = NoDaemonProcess
 
