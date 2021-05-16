@@ -20,11 +20,15 @@ class NoDaemonProcess(multiprocessing.Process):
     def daemon(self, value):
         pass
 
+class NoDaemonContext(type(multiprocessing.get_context())):
+    Process = NoDaemonProcess
 
 # Define a no-daemon pool (NoDaemonPool) class that spawns no-daemon processes 
 # which will also spawn their own subprocesses
 class NoDaemonPool(multiprocessing.pool.Pool):
-    Process = NoDaemonProcess
+    def __init__(self, *args, **kwargs):
+        kwargs['context'] = NoDaemonContext()
+        super(NoDaemonPool, self).__init__(*args, **kwargs)
 
 
 # Define a string representable (StringRepresentable) interface for debug purposes
