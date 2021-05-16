@@ -8,35 +8,6 @@ import re
 import sys
 import timeit
 
-args = []
-threads = 2
-chunk = 4
-threshold = 0.6
-min_length = 8
-xnsize = 1024
-seq = ''
-
-i = 0
-argv = sys.argv[1:]
-# Handle command line arguments
-while len(argv) > 0:
-   arg = argv.pop(0)
-   if arg == '-t' or arg == '--threads':
-       threads = int(argv.pop(0))
-   elif arg == '-c' or arg == '--chunk':
-       chunk = int(argv.pop(0))
-   elif arg == '-th' or arg == '--threshold':
-       threshold = float(argv.pop(0))
-   elif arg == '-m' or arg == '--min-length':
-       min_length = int(argv.pop(0))
-   elif arg == '-n':
-       xnsize = int(argv.pop(0))
-   else:
-       args.append(arg)
-
-if len(args) > 0:
-   seq = args[0]
-
 # Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned 
 # by a pool that can also spawn their own subprocesses
 class NoDaemonProcess(multiprocessing.Process):
@@ -190,6 +161,37 @@ def gen_seq(length):
     return ''.join(random.choice(['C', 'G', 'A', 'T']) for i in range(length))
 
 if __name__ == '__main__':
+
+    args = []
+    threads = 2
+    chunk = 4
+    threshold = 0.6
+    min_length = 8
+    xnsize = 1024
+    seq = ''
+
+    i = 0
+    argv = sys.argv[1:]
+
+    # Handle command line arguments
+    while len(argv) > 0:
+        arg = argv.pop(0)
+        if arg == '-t' or arg == '--threads':
+            threads = int(argv.pop(0))
+        elif arg == '-c' or arg == '--chunk':
+            chunk = int(argv.pop(0))
+        elif arg == '-th' or arg == '--threshold':
+            threshold = float(argv.pop(0))
+        elif arg == '-m' or arg == '--min-length':
+            min_length = int(argv.pop(0))
+        elif arg == '-n':
+            xnsize = int(argv.pop(0))
+        else:
+            args.append(arg)
+
+    if len(args) > 0:
+        seq = args[0]
+
     if len(seq) == 0:
         start = timeit.default_timer()
         seq = gen_seq(xnsize)
