@@ -7,6 +7,7 @@ Simple scripts for identifying CpG islands in a genomic sequence string.
 
 ```
 python3 scan.py [options] [genomic-sequence]
+```
 
 ## OOTB Example
 OOTB no flags or even a genomic sequence are required.
