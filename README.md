@@ -6,7 +6,7 @@ Simple scripts for identifying CpG islands in a genomic sequence string.
 ## Usage
 
 ```
-python3 scan.py [options] [genomic-sequence]
+python3 scan.py [-t <threads>] [-th <threshold>] [-c <chunk-size>] [-m <min-length>] [-n <random-sequence-length>] [genomic-sequence]
 ```
 
 ## OOTB Example
