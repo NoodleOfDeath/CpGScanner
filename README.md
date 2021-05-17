@@ -23,10 +23,10 @@ Took 12.89 second(s) to find 19 CpG islands in 1024 character sequence
 ```
 
 ## Options
-| Flag                  | Description        | Type    |
-| --------------------- | ------------------ | ------- |
-| -t or --threads       | Number of threads to use. Default is 2. | integer |
-| -th or --threshold    | Threshold to consider a chunk part of a CpG island. Default is 0.60, or 60% C's and G's | float |
-| -c or --chunk         | Chunk size to use when slicing sequence. Default is 4 | integer |
-| -m or --min-length    | Min length of a CpG island. Default is 8 characters | integer |
-| -n                    | Length of random genomic sequence to test if not providing a sequence argument. Default length is 1024 characters | integer |
+| Flag | Description | Type |
+| --- | --- | --- |
+| `-t` or `--threads` | Number of threads to use. Default is 2. | integer |
+| `-th` or `--threshold` | Threshold to consider a chunk part of a CpG island. Default is 0.60, or 60% C's and G's | float |
+| `-c` or `--chunk` | Chunk size to use when slicing sequence. Default is 4 | integer |
+| `-m` or `--min-length` | Min length of a CpG island. Default is 8 characters | integer |
+| `-n` | Length of random genomic sequence to test if not providing a sequence argument. Default length is 1024 characters | integer |
