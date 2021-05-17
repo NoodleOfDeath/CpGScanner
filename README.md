@@ -23,7 +23,6 @@ Took 12.89 second(s) to find 19 CpG islands in 1024 character sequence
 ```
 
 ## Options
-```
 | Flag                  | Description        | Type    |
 | --------------------- | ------------------ | ------- |
 | -t or --threads       | Number of threads to use. Default is 2. | integer |
