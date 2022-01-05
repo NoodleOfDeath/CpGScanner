@@ -182,7 +182,12 @@ if __name__ == '__main__':
     # Handle command line arguments
     while len(argv) > 0:
         arg = argv.pop(0)
-        if arg == '-t' or arg == '--threads':
+        if arg == "-h" or arg == "--help":
+            print(
+                "usage: ./scan.py [-t <threads>] [-th <threshold>] [-c <chunk-size>] [-m <min-length>] [-n <random-sequence-length>] [genomic-sequence]"
+            )
+            exit()
+        elif arg == "-t" or arg == "--threads":
             threads = int(argv.pop(0))
         elif arg == '-c' or arg == '--chunk':
             chunk = int(argv.pop(0))
