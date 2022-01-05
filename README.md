@@ -6,7 +6,17 @@ Simple scripts for identifying CpG islands in a genomic sequence string.
 ## Usage
 
 ```
-python3 scan.py [-t <threads>] [-th <threshold>] [-c <chunk-size>] [-m <min-length>] [-n <random-sequence-length>] [genomic-sequence]
+$ git clone 
+Cloning into 'CpG-Scanner'...
+remote: Enumerating objects: 122, done.
+remote: Counting objects: 100% (122/122), done.
+remote: Compressing objects: 100% (62/62), done.
+remote: Total 122 (delta 43), reused 85 (delta 20), pack-reused 0
+Receiving objects: 100% (122/122), 18.51 KiB | 3.08 MiB/s, done.
+Resolving deltas: 100% (43/43), done.
+$ cd CpG-Scanner/src/python
+$ chmod +x scan.py
+$ ./scan.py [-t <threads>] [-th <threshold>] [-c <chunk-size>] [-m <min-length>] [-n <random-sequence-length>] [genomic-sequence]
 ```
 
 ## OOTB Example
