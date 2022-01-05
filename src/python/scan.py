@@ -8,6 +8,9 @@ import re
 import sys
 import timeit
 
+# Daemon processes are important for parallel processing and improving computational
+# performance of this script.
+
 class NoDaemonProcess(multiprocessing.Process):
     """ 
     Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned 
@@ -61,8 +64,11 @@ class Chunk(StringRepresentable):
     def __str__(self):
         return "({0}, {1}, {2})".format(self.seq, self.reduce(), self.length)
 
-    # returns the ratio of CG presence in this chunk
     def reduce(self):
+        """
+        Returns the ratio of CG presence in this chunk
+        """
+        
         return self.score / self.length
 
 
@@ -86,6 +92,7 @@ def find_islands(seq, opt = {}):
     Finds CpG islands in a passed genomic sequence based on passed criteria.
     """
 
+    # Parse options and/or use defaults
     threads = 2
     if 'threads' in opt:
         threads = opt['threads']
@@ -104,12 +111,13 @@ def find_islands(seq, opt = {}):
     min_length = opt['min-length']
 
     print("Searching %ld character sequence for CpG islands using %ld threads, threshold of %.2f, min length of %ld, and slicing into chunks of size %ld or less" % (len(seq), threads, threshold, min_length, chunk_size))
-
+    
+    # Breaks sequence into chunks of equal size based on options
     chunks = seek(seq, opt)
 
     print("Sliced %ld character sequence into %ld chunks" % (len(seq), len(chunks)))
 
-    # Search for islands of `min_length` that meet the threshold
+    # Search for islands of `min_length` that meet the threshold from `chunks`
     islands = []
     offset = 0
     n = -1
@@ -160,7 +168,7 @@ def seek(seq, opt = {}):
             # Recursively calls `seek` on the head and tail halves of `seq`
             r = pool.starmap(seek, [(seq[0:mid], opt), (seq[mid:len(seq)], opt)])
 
-            # this is equivalent to serially calling `seek` like below:
+            # This is equivalent to serially calling `seek` like below:
             # r = (seek(seq[0:mid], opt), seek(seq[mid:len(seq)], opt))
 
             # If the return object is two arrays of chunks, append their contents,
@@ -173,14 +181,14 @@ def seek(seq, opt = {}):
 
             return chunks
 
-    # TODO: is regex or count more performant?
+    # TODO: is regex or count more performant than `count` method?
     score = len(re.findall('[CG]', seq)) # seq.count('C') + seq.count('G')
     return Chunk(seq, score, len(seq))
 
 
 def gen_seq(length):
     """
-    Generates a random genomic sequence.
+    Generates a random genomic sequence of a specified length.
     """
     
     return ''.join(random.choice(['C', 'G', 'A', 'T']) for i in range(length))
@@ -198,7 +206,7 @@ if __name__ == '__main__':
     i = 0
     argv = sys.argv[1:]
 
-    # Handle command line arguments
+    # Parse out command line arguments into options
     while len(argv) > 0:
         arg = argv.pop(0)
         if arg == "-h" or arg == "--help":
@@ -227,7 +235,9 @@ if __name__ == '__main__':
         seq = gen_seq(xnsize)
         stop = timeit.default_timer()
         print("Took %.2f second(s) to generate %ld character sequence" % (stop - start, len(seq)))
+    # Record start time
     start = timeit.default_timer()
+    # Find islands in seq based on options passed by command line
     islands = find_islands(
         seq,
         { 
@@ -236,6 +246,7 @@ if __name__ == '__main__':
             'threshold': threshold,
             'min-length': min_length,
         })
+    # Record stop time for debug purposes
     stop = timeit.default_timer()
     print("Took %.2f second(s) to find %ld CpG islands in %ld character sequence" % (stop - start, len(islands), len(seq)))
     print(islands)
