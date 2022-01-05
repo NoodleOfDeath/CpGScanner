@@ -23,7 +23,7 @@ $ ./scan.py [-t <threads>] [-th <threshold>] [-c <chunk-size>] [-m <min-length>]
 OOTB no flags or even a genomic sequence are required.
 
 ```
-$ python3 scan.py
+$ ./scan.py
 Took 0.00 second(s) to generate 1024 character sequence
 Searching 1024 character sequence for CpG islands using 2 threads, threshold of 0.60, min length of 8, and slicing into chunks of size 4 or less
 Sliced 1024 character sequence into 256 chunks
