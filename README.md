@@ -15,8 +15,9 @@ remote: Total 122 (delta 43), reused 85 (delta 20), pack-reused 0
 Receiving objects: 100% (122/122), 18.51 KiB | 3.08 MiB/s, done.
 Resolving deltas: 100% (43/43), done.
 $ cd CpG-Scanner/src/python
-$ chmod +x scan.py
-$ ./scan.py [-t <threads>] [-th <threshold>] [-c <chunk-size>] [-m <min-length>] [-n <random-sequence-length>] [genomic-sequence]
+$ chmod +x scan.py.
+$ ./scan.py -h
+usage: ./scan.py [-t <threads>] [-th <threshold>] [-c <chunk-size>] [-m <min-length>] [-n <random-sequence-length>] [genomic-sequence]
 ```
 
 ## OOTB Example
