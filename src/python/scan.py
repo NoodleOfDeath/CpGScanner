@@ -8,9 +8,11 @@ import re
 import sys
 import timeit
 
-# Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned 
-# by a pool that can also spawn their own subprocesses
 class NoDaemonProcess(multiprocessing.Process):
+    """ 
+    Define a no-daemon process (NoDaemonProcess) class so we can have processes spawned 
+    by a pool that can also spawn their own subprocesses
+    """
     
     @property
     def daemon(self):
@@ -23,16 +25,21 @@ class NoDaemonProcess(multiprocessing.Process):
 class NoDaemonContext(type(multiprocessing.get_context())):
     Process = NoDaemonProcess
 
-# Define a no-daemon pool (NoDaemonPool) class that spawns no-daemon processes 
-# which will also spawn their own subprocesses
 class NoDaemonPool(multiprocessing.pool.Pool):
+    """
+    Define a no-daemon pool (NoDaemonPool) class that spawns no-daemon processes 
+    which will also spawn their own subprocesses
+    """
+    
     def __init__(self, *args, **kwargs):
         kwargs['context'] = NoDaemonContext()
         super(NoDaemonPool, self).__init__(*args, **kwargs)
 
 
-# Define a string representable (StringRepresentable) interface for debug purposes
 class StringRepresentable:
+    """
+    Define a string representable (StringRepresentable) interface for debug purposes
+    """
 
     def __str__(self):
         pass
@@ -41,8 +48,10 @@ class StringRepresentable:
         return str(self)
 
 
-# Define Chunk class for parallel processing of the genome
 class Chunk(StringRepresentable):
+    """
+    Define Chunk class for parallel processing of the genome
+    """
 
     def __init__(self, seq, score, length):
         self.seq = seq
@@ -57,9 +66,11 @@ class Chunk(StringRepresentable):
         return self.score / self.length
 
 
-# Define a CpG island (Island) class that represents a CpG site in a genomic sequence, 
-# in the form of a substring with an index and length
 class Island(StringRepresentable):
+    """
+    Define a CpG island (Island) class that represents a CpG site in a genomic sequence, 
+    in the form of a substring with an index and length
+    """
 
     def __init__(self, seq, index, length):
         self.seq = seq
@@ -70,8 +81,10 @@ class Island(StringRepresentable):
         return "({0}, {1}, {2})".format(self.seq, self.index, self.length)
 
 
-# Finds CpG islands in a passed genomic sequence based on passed criteria.
 def find_islands(seq, opt = {}):
+    """
+    Finds CpG islands in a passed genomic sequence based on passed criteria.
+    """
 
     threads = 2
     if 'threads' in opt:
@@ -123,8 +136,11 @@ def find_islands(seq, opt = {}):
     print("Found %ld CpG islands matching the criteria" % len(islands))
     return islands
 
-# Subroutine for breaking genomic sequence into chunks to be processed in parallel.
+
 def seek(seq, opt = {}):
+    """
+    Subroutine for breaking genomic sequence into chunks to be processed in parallel.
+    """
 
     threads = 2
     if 'threads' in opt:
@@ -162,8 +178,11 @@ def seek(seq, opt = {}):
     return Chunk(seq, score, len(seq))
 
 
-# Generates a random genomic sequence.
 def gen_seq(length):
+    """
+    Generates a random genomic sequence.
+    """
+    
     return ''.join(random.choice(['C', 'G', 'A', 'T']) for i in range(length))
 
 if __name__ == '__main__':
