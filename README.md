@@ -6,7 +6,7 @@ Simple scripts for identifying CpG islands in a genomic sequence string.
 ## Usage
 
 ```
-$ git clone 
+$ git clone https://github.com/NoodleOfDeath/CpG-Scanner
 Cloning into 'CpG-Scanner'...
 remote: Enumerating objects: 122, done.
 remote: Counting objects: 100% (122/122), done.
